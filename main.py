@@ -11,3 +11,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    screen.fill((255, 255, 255))
+
+    pygame.draw.circle(screen, (0, 0, 255), (250, 200), 75)
+    pygame.display.flip()
