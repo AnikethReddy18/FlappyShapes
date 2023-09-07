@@ -7,7 +7,8 @@ from pygame import (K_w,
                     K_n,
                     K_ESCAPE,
                     KEYDOWN,
-                    QUIT, )
+                    QUIT,
+                    RLEACCEL)
 
 # Constants
 SCREEN_WIDTH = 500
@@ -20,10 +21,14 @@ ENEMY_COLOR = (255, 0, 0)
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((100, 100))
-        self.surf.fill(PLAYER_COLOR)
+        image = pygame.image.load("Images/bird.png").convert_alpha()
+
+        self.surf = pygame.transform.scale(image, (100, 100))
+
         self.rect = self.surf.get_rect()
         self.rect.center = (SCREEN_WIDTH / 2, SCREEN_LENGTH / 2)
+
+        self.speed = 20
 
     def update_position(self, keys):
 
@@ -56,7 +61,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.center = enemy_position
 
     def update(self):
-        self.rect.move_ip(1, 0)
+        self.rect.x += 1
 
 
 def main():
@@ -76,6 +81,7 @@ def main():
     enemies = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
+
 
     # Game loop
     running = True
@@ -98,16 +104,23 @@ def main():
         # Fill Background
         screen.fill(BG_COLOR)
 
-        # Update Positions
+        # Update Sprites
         pressed_keys = pygame.key.get_pressed()
         player.update_position(pressed_keys)
+
+        for enemy in enemies:
+            enemy.update()
 
         # Draw Sprites
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
 
+        if pygame.sprite.spritecollideany(player, enemies):
+            player.kill()
+
         # Update Display
         pygame.display.flip()
+
 
     pygame.quit()
 
