@@ -65,6 +65,11 @@ def main():
     # Main Screen
     screen = pygame.display.set_mode([500, 650])
 
+    # Add Enemy Event
+    ADDENEMY = pygame.USEREVENT + 1
+    pygame.time.set_timer(ADDENEMY, 250)
+
+    # Instantiate Player
     player = Player()
 
     # Sprite Groups
@@ -85,8 +90,10 @@ def main():
                 if event.key == K_ESCAPE:
                     running = False
 
-                if event.key == K_n:
-                    enemy = Enemy()
+            elif event.type == ADDENEMY:
+                new_enemy = Enemy()
+                enemies.add(new_enemy)
+                all_sprites.add(new_enemy)
 
         # Fill Background
         screen.fill(BG_COLOR)
@@ -99,6 +106,7 @@ def main():
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
 
+        # Update Display
         pygame.display.flip()
 
     pygame.quit()
