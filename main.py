@@ -16,30 +16,29 @@ SCREEN_LENGTH = 650
 BG_COLOR = (255, 255, 255)
 PLAYER_COLOR = (0, 0, 255)
 ENEMY_COLOR = (255, 0, 0)
-
+PLAYER_SPEED = 5
+ENEMY_SPEED = 2
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        image = pygame.image.load("Images/bird.png").convert_alpha()
+        image = pygame.image.load("Images/flappy_bird.png").convert_alpha()
 
-        self.surf = pygame.transform.scale(image, (100, 100))
+        self.surf = pygame.transform.scale(image, (50, 50))
 
         self.rect = self.surf.get_rect()
         self.rect.center = (SCREEN_WIDTH / 2, SCREEN_LENGTH / 2)
 
-        self.speed = 20
-
     def update_position(self, keys):
 
         if keys[K_w]:
-            self.rect.move_ip(0, -1)
+            self.rect.move_ip(0, -PLAYER_SPEED)
         if keys[K_s]:
-            self.rect.move_ip(0, 1)
+            self.rect.move_ip(0, PLAYER_SPEED)
         if keys[K_a]:
-            self.rect.move_ip(-1, 0)
+            self.rect.move_ip(-PLAYER_SPEED, 0)
         if keys[K_d]:
-            self.rect.move_ip(1, 0)
+            self.rect.move_ip(PLAYER_SPEED, 0)
 
         if self.rect.top <= 0:
             self.rect.top = 0
@@ -54,17 +53,19 @@ class Player(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((20, 10))
-        self.surf.fill(ENEMY_COLOR)
+        image = pygame.image.load("Images/rock.png").convert_alpha()
+        self.surf = pygame.transform.scale(image, (30, 30))
         self.rect = self.surf.get_rect()
-        enemy_position = (20, random.randint(10, SCREEN_LENGTH - 10))
+        enemy_position = (SCREEN_WIDTH, random.randint(10, SCREEN_LENGTH - 10))
         self.rect.center = enemy_position
 
     def update(self):
-        self.rect.x += 1
+        self.rect.x -= ENEMY_SPEED
 
 
 def main():
+    clock = pygame.time.Clock()
+
     pygame.init()
 
     # Main Screen
@@ -120,6 +121,9 @@ def main():
 
         # Update Display
         pygame.display.flip()
+
+        # Adjust Framrate
+        clock.tick(120)
 
 
     pygame.quit()
