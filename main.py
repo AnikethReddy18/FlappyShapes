@@ -10,6 +10,8 @@ from pygame import (K_w,
                     QUIT,
                     RLEACCEL)
 
+
+
 # Constants
 SCREEN_WIDTH = 500
 SCREEN_LENGTH = 650
@@ -19,9 +21,11 @@ ENEMY_COLOR = (255, 0, 0)
 PLAYER_SPEED = 5
 ENEMY_SPEED = 2
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.death_sound = pygame.mixer.Sound("Audio/player_death.mp3")
         image = pygame.image.load("Images/flappy_bird.png").convert_alpha()
 
         self.surf = pygame.transform.scale(image, (50, 50))
@@ -58,6 +62,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect()
         enemy_position = (SCREEN_WIDTH, random.randint(10, SCREEN_LENGTH - 10))
         self.rect.center = enemy_position
+        self.death_sound = pygame.mixer.Sound("Audio/player_death.mp3")
 
     def update(self):
         self.rect.x -= ENEMY_SPEED
@@ -66,7 +71,10 @@ class Enemy(pygame.sprite.Sprite):
 def main():
     clock = pygame.time.Clock()
 
+    # Initialisation
+
     pygame.init()
+    pygame.mixer.init()
 
     # Main Screen
     screen = pygame.display.set_mode([500, 650])
@@ -82,7 +90,6 @@ def main():
     enemies = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
-
 
     # Game loop
     running = True
@@ -117,14 +124,14 @@ def main():
             screen.blit(entity.surf, entity.rect)
 
         if pygame.sprite.spritecollideany(player, enemies):
+            player.death_sound.play(loops=0)
             player.kill()
 
         # Update Display
         pygame.display.flip()
 
-        # Adjust Framrate
+        # Adjust Frustrate
         clock.tick(120)
-
 
     pygame.quit()
 
