@@ -8,6 +8,7 @@ from pygame import (K_w,
                     K_d)
 import random
 
+
 class Player(Sprite):
     def __init__(self, screen_width, screen_length):
         super().__init__()
