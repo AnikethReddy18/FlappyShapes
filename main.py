@@ -100,13 +100,23 @@ class Main:
             if pygame.sprite.spritecollideany(self.player, self.enemies):
                 self.player.death_sound.play(loops=0)
                 self.player.kill()
-                self.game_over = True
+                self.reset_game()
 
             # Update Display
             pygame.display.flip()
 
             # Adjust Framer
             self.clock.tick(120)
+
+    def reset_game(self):
+        self.player = Player(self.screen_length, self.screen_width)
+        self.all_sprites.add(self.player)
+
+        for enemy in self.enemies:
+            enemy.kill()
+
+        # Reset the clock
+        self.clock = pygame.time.Clock()
 
 
 # Constants
