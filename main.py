@@ -4,13 +4,9 @@ from pygame import (K_w,
                     K_s,
                     K_a,
                     K_d,
-                    K_n,
                     K_ESCAPE,
                     KEYDOWN,
-                    QUIT,
-                    RLEACCEL)
-
-
+                    QUIT)
 
 # Constants
 SCREEN_WIDTH = 500
@@ -20,6 +16,9 @@ PLAYER_COLOR = (0, 0, 255)
 ENEMY_COLOR = (255, 0, 0)
 PLAYER_SPEED = 5
 ENEMY_SPEED = 2
+COLOR_BLACK = (0, 0, 0)
+
+screen = pygame.display.set_mode([500, 650])
 
 
 class Player(pygame.sprite.Sprite):
@@ -68,16 +67,22 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x -= ENEMY_SPEED
 
 
+class UI:
+    @staticmethod
+    def draw_button(x, y, size, text):
+        font = pygame.font.Font("Fonts/Inter-Medium.ttf", size)
+        text = font.render(text, True, COLOR_BLACK)
+        text_rect = text.get_rect()
+        text_rect.center = (x, y)
+        screen.blit(text, text_rect)
+
+
 def main():
     clock = pygame.time.Clock()
 
     # Initialisation
-
     pygame.init()
     pygame.mixer.init()
-
-    # Main Screen
-    screen = pygame.display.set_mode([500, 650])
 
     # Add Enemy Event
     ADDENEMY = pygame.USEREVENT + 1
@@ -85,6 +90,9 @@ def main():
 
     # Instantiate Player
     player = Player()
+
+    # Instantiate UI
+    ui = UI
 
     # Sprite Groups
     enemies = pygame.sprite.Group()
@@ -126,9 +134,15 @@ def main():
         if pygame.sprite.spritecollideany(player, enemies):
             player.death_sound.play(loops=0)
             player.kill()
+            running = False
+
+        # Buttons
+        ui.draw_button(SCREEN_WIDTH/2, 25, "Restart")
 
         # Update Display
         pygame.display.flip()
+
+
 
         # Adjust Frustrate
         clock.tick(120)
