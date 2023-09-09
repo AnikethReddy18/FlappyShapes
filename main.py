@@ -6,6 +6,7 @@ from pygame import (
                     QUIT,
                     MOUSEBUTTONDOWN)
 from entities import Player, Enemy
+from ui import UI
 
 # Constants
 SCREEN_WIDTH = 500
@@ -22,16 +23,6 @@ screen = pygame.display.set_mode([500, 650])
 game_state = True
 
 
-class UI:
-    @staticmethod
-    def restart_button(x, y, size, text):
-        global game_state
-
-        font = pygame.font.Font("Fonts/Inter-Medium.ttf", size)
-        text = font.render(text, True, COLOR_BLACK)
-        text_rect = text.get_rect()
-        text_rect.center = (x, y)
-        screen.blit(text, text_rect)
 
 
 def main():
@@ -106,7 +97,7 @@ def main():
             game_state = False
 
         if game_state is False:
-            ui.restart_button(SCREEN_WIDTH / 2, SCREEN_LENGTH / 2, 25, "Restart")
+            ui.restart_button(SCREEN_WIDTH/2, SCREEN_LENGTH/2, 20, COLOR_BLACK, screen)
 
         # Update Display
         pygame.display.flip()
