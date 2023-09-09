@@ -75,6 +75,7 @@ def main():
                 new_enemy = Enemy(SCREEN_WIDTH, SCREEN_LENGTH, ENEMY_SPEED)
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
+                #
 
             elif event.type == MOUSEBUTTONDOWN:
                 x, y = SCREEN_WIDTH / 2, SCREEN_LENGTH / 2
