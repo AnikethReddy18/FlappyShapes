@@ -7,7 +7,7 @@ from pygame import (
 from entities import Player, Enemy
 from ui import UI
 
-game_state = True
+game_over = True
 running = True
 
 
@@ -16,6 +16,7 @@ class Main:
         # Configure Screen
         self.screen_width = screen_width
         self.screen_length = screen_length
+        self.screen = pygame.display.set_mode([self.screen_width, self.screen_length])
 
         # Colors
         self.bg_color = bg_color
@@ -27,7 +28,7 @@ class Main:
 
         # Game State
         self.running = True
-        self.game_state = True
+        self.game_over = False
 
         self.clock = pygame.time.Clock()
 
@@ -62,7 +63,7 @@ class Main:
                 self.enemies.add(new_enemy)
                 self.all_sprites.add(new_enemy)
 
-            elif event.type == MOUSEBUTTONDOWN and game_state is False:
+            elif event.type == MOUSEBUTTONDOWN and game_over is True:
                 x, y = self.screen_width / 2, self.screen_length / 2
                 mouse = pygame.mouse.get_pos()
                 button_range = ((x, x + 86), (y, y + 31))
@@ -71,24 +72,19 @@ class Main:
                         button_range[1][1]:
                     print("hello")
 
-    def draw_sprites(self):
+    def draw(self):
         for entity in self.all_sprites:
-            screen.blit(entity.surf, entity.rect)
+            self.screen.blit(entity.surf, entity.rect)
 
-        if pygame.sprite.spritecollideany(self.player, self.enemies):
-            self.player.death_sound.play(loops=0)
-            self.player.kill()
-            self.game_state = False
-
-        if self.game_state is False:
-            self.ui.restart_button(SCREEN_WIDTH / 2, SCREEN_LENGTH / 2, 20, self.color_black, screen)
+        if self.game_over is True:
+            self.ui.restart_button(SCREEN_WIDTH / 2, SCREEN_LENGTH / 2, 20, self.color_black, self.screen)
 
     def run_game_loop(self):
         while self.running:
 
             self.run_event_manager()
             # Fill Background
-            screen.fill(self.bg_color)
+            self.screen.fill(self.bg_color)
 
             # Update Sprites
             pressed_keys = pygame.key.get_pressed()
@@ -98,14 +94,19 @@ class Main:
                 enemy.update()
 
             # Draw Sprites
-            self.draw_sprites()
+            self.draw()
+
+            # Player death
+            if pygame.sprite.spritecollideany(self.player, self.enemies):
+                self.player.death_sound.play(loops=0)
+                self.player.kill()
+                self.game_over = True
 
             # Update Display
             pygame.display.flip()
-            print(self.game_state)
-            # Adjust Frustrate
-            self.clock.tick(120)
 
+            # Adjust Framer
+            self.clock.tick(120)
 
 
 # Constants
@@ -116,7 +117,5 @@ ENEMY_COLOR = (255, 0, 0)
 PLAYER_SPEED = 5
 ENEMY_SPEED = 2
 COLOR_BLACK = (0, 0, 0)
-
-screen = pygame.display.set_mode([500, 650])
 
 main = Main(SCREEN_WIDTH, SCREEN_LENGTH, ENEMY_SPEED, PLAYER_SPEED, BG_COLOR, COLOR_BLACK)
