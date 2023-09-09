@@ -1,12 +1,11 @@
-import random
+
 import pygame
-from pygame import (K_w,
-                    K_s,
-                    K_a,
-                    K_d,
+from pygame import (
                     K_ESCAPE,
                     KEYDOWN,
-                    QUIT)
+                    QUIT,
+                    MOUSEBUTTONDOWN)
+from entities import Player, Enemy
 
 # Constants
 SCREEN_WIDTH = 500
@@ -20,56 +19,14 @@ COLOR_BLACK = (0, 0, 0)
 
 screen = pygame.display.set_mode([500, 650])
 
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.death_sound = pygame.mixer.Sound("Audio/player_death.mp3")
-        image = pygame.image.load("Images/flappy_bird.png").convert_alpha()
-
-        self.surf = pygame.transform.scale(image, (50, 50))
-
-        self.rect = self.surf.get_rect()
-        self.rect.center = (SCREEN_WIDTH / 2, SCREEN_LENGTH / 2)
-
-    def update_position(self, keys):
-
-        if keys[K_w]:
-            self.rect.move_ip(0, -PLAYER_SPEED)
-        if keys[K_s]:
-            self.rect.move_ip(0, PLAYER_SPEED)
-        if keys[K_a]:
-            self.rect.move_ip(-PLAYER_SPEED, 0)
-        if keys[K_d]:
-            self.rect.move_ip(PLAYER_SPEED, 0)
-
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= SCREEN_LENGTH:
-            self.rect.bottom = SCREEN_LENGTH
-        if self.rect.left <= 0:
-            self.rect.left = 0
-        if self.rect.right >= SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
-
-
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        image = pygame.image.load("Images/rock.png").convert_alpha()
-        self.surf = pygame.transform.scale(image, (30, 30))
-        self.rect = self.surf.get_rect()
-        enemy_position = (SCREEN_WIDTH, random.randint(10, SCREEN_LENGTH - 10))
-        self.rect.center = enemy_position
-        self.death_sound = pygame.mixer.Sound("Audio/player_death.mp3")
-
-    def update(self):
-        self.rect.x -= ENEMY_SPEED
+game_state = True
 
 
 class UI:
     @staticmethod
-    def draw_button(x, y, size, text):
+    def restart_button(x, y, size, text):
+        global game_state
+
         font = pygame.font.Font("Fonts/Inter-Medium.ttf", size)
         text = font.render(text, True, COLOR_BLACK)
         text_rect = text.get_rect()
@@ -78,6 +35,8 @@ class UI:
 
 
 def main():
+    global game_state
+
     clock = pygame.time.Clock()
 
     # Initialisation
@@ -89,7 +48,7 @@ def main():
     pygame.time.set_timer(ADDENEMY, 250)
 
     # Instantiate Player
-    player = Player()
+    player = Player(SCREEN_WIDTH, SCREEN_LENGTH)
 
     # Instantiate UI
     ui = UI
@@ -113,16 +72,25 @@ def main():
                     running = False
 
             elif event.type == ADDENEMY:
-                new_enemy = Enemy()
+                new_enemy = Enemy(SCREEN_WIDTH, SCREEN_LENGTH, ENEMY_SPEED)
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
+
+            elif event.type == MOUSEBUTTONDOWN:
+                x, y = SCREEN_WIDTH / 2, SCREEN_LENGTH / 2
+                mouse = pygame.mouse.get_pos()
+                button_range = ((x, x + 86), (y, y + 31))
+
+                if button_range[0][0] <= mouse[0] <= button_range[0][1] and button_range[1][0] <= mouse[1] <= \
+                        button_range[1][1]:
+                    print("hello")
 
         # Fill Background
         screen.fill(BG_COLOR)
 
         # Update Sprites
         pressed_keys = pygame.key.get_pressed()
-        player.update_position(pressed_keys)
+        player.update_position(pressed_keys, PLAYER_SPEED)
 
         for enemy in enemies:
             enemy.update()
@@ -134,18 +102,17 @@ def main():
         if pygame.sprite.spritecollideany(player, enemies):
             player.death_sound.play(loops=0)
             player.kill()
-            running = False
+            game_state = False
 
-        # Buttons
-        ui.draw_button(SCREEN_WIDTH/2, 25, "Restart")
+        if game_state is False:
+            ui.restart_button(SCREEN_WIDTH / 2, SCREEN_LENGTH / 2, 25, "Restart")
 
         # Update Display
         pygame.display.flip()
 
-
-
         # Adjust Frustrate
         clock.tick(120)
+        print(game_state)
 
     pygame.quit()
 
