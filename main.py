@@ -11,7 +11,7 @@ game_over = True
 running = True
 
 
-class Main:
+class GameLoop:
     def __init__(self, screen_width, screen_length, enemy_speed, player_speed, bg_color, color_black):
         # Configure Screen
         self.screen_width = screen_width
@@ -128,4 +128,4 @@ PLAYER_SPEED = 5
 ENEMY_SPEED = 2
 COLOR_BLACK = (0, 0, 0)
 
-main = Main(SCREEN_WIDTH, SCREEN_LENGTH, ENEMY_SPEED, PLAYER_SPEED, BG_COLOR, COLOR_BLACK)
+main = GameLoop(SCREEN_WIDTH, SCREEN_LENGTH, ENEMY_SPEED, PLAYER_SPEED, BG_COLOR, COLOR_BLACK)
