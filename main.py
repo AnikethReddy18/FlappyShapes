@@ -1,7 +1,6 @@
-from pygame import display, event, QUIT, KEYDOWN, init
+from pygame import display, event, QUIT, KEYDOWN, init, mixer
 from pygame.font import SysFont
 from gameloop import GameLoop
-
 from entities import Player
 
 
@@ -13,6 +12,10 @@ class MainMenu:
         display.set_caption("Flappy Shapes")
         self.main_menu_running = True
         self.player = Player(SCREEN_WIDTH, SCREEN_LENGTH, (100, 100))
+
+        # Background Music
+        bg_music = mixer.Sound("Audio/background_music.mp3")
+        bg_music.play()
 
         while self.main_menu_running:
 
