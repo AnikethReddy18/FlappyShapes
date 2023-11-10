@@ -10,7 +10,7 @@ import random
 
 
 class Player(Sprite):
-    def __init__(self, screen_width, screen_length):
+    def __init__(self, screen_width, screen_length, size=(50, 50)):
         super().__init__()
 
         self.screen_width = screen_width
@@ -19,7 +19,7 @@ class Player(Sprite):
         self.death_sound = Sound("Audio/player_death.mp3")
         image = load("Images/flappy_bird.png").convert_alpha()
 
-        self.surf = scale(image, (50, 50))
+        self.surf = scale(image, size)
 
         self.rect = self.surf.get_rect()
         self.rect.center = (self.screen_width / 2, self.screen_length / 2)

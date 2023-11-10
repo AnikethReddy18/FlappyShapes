@@ -1,131 +1,54 @@
-import pygame
-from pygame import (
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-    MOUSEBUTTONDOWN)
-from entities import Player, Enemy
-from ui import UI
+from pygame import display, event, QUIT, KEYDOWN, init
+from pygame.font import SysFont
+from gameloop import GameLoop
 
-game_over = True
-running = True
+from entities import Player
 
 
-class GameLoop:
-    def __init__(self, screen_width, screen_length, enemy_speed, player_speed, bg_color, color_black):
-        # Configure Screen
-        self.screen_width = screen_width
-        self.screen_length = screen_length
-        self.screen = pygame.display.set_mode([self.screen_width, self.screen_length])
+class MainMenu:
+    def __init__(self):
+        init()
+        # Screen
+        self.screen = display.set_mode([SCREEN_WIDTH, SCREEN_LENGTH])
+        display.set_caption("Flappy Shapes")
+        self.main_menu_running = True
+        self.player = Player(SCREEN_WIDTH, SCREEN_LENGTH, (100, 100))
 
-        # Colors
-        self.bg_color = bg_color
-        self.color_black = color_black
+        while self.main_menu_running:
 
-        # Speed
-        self.enemy_speed = enemy_speed
-        self.player_speed = player_speed
+            for this_event in event.get():
+                if this_event.type == QUIT:
+                    self.main_menu_running = False
+                if this_event.type == KEYDOWN:
+                    self.main_menu_running = False
+                    GameLoop(self.screen, ENEMY_SPEED, PLAYER_SPEED, WHITE_COLOR, COLOR_BLACK)
 
-        # Game State
-        self.running = True
-        self.game_over = False
+            self.screen.fill((255, 255, 255))
+            self.display_text()
+            self.display_player()
 
-        self.clock = pygame.time.Clock()
+            display.flip()
 
-        pygame.init()
+    def display_text(self):
+        title_font = SysFont("arial", 30)
+        subtext_font = SysFont("comicsansms", 20)
+        title = title_font.render("Flappy Shapes", True, (0, 0, 0))
+        self.screen.blit(title, (SCREEN_WIDTH / 2 - 90, SCREEN_LENGTH / 12))
 
-        # Add Enemy Event
-        self.add_enemy = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.add_enemy, 250)
+        subtext = subtext_font.render("Press Any Key to Play!", True, (2, 145, 150))
+        self.screen.blit(subtext, (SCREEN_WIDTH / 2, SCREEN_LENGTH / 7))
 
-        # Instantiate Player and UI
-        self.player = Player(self.screen_length, self.screen_width)
-        self.ui = UI
-
-        # Make Sprite Groups
-        self.enemies = pygame.sprite.Group()
-        self.all_sprites = pygame.sprite.Group()
-        self.all_sprites.add(self.player)
-
-        self.run_game_loop()
-
-    def run_event_manager(self):
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self.running = False
-
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.running = False
-
-            elif event.type == self.add_enemy:
-                new_enemy = Enemy(self.screen_width, self.screen_length, self.enemy_speed)
-                self.enemies.add(new_enemy)
-                self.all_sprites.add(new_enemy)
-
-            elif event.type == MOUSEBUTTONDOWN and game_over is True:
-                x, y = self.screen_width / 2, self.screen_length / 2
-                mouse = pygame.mouse.get_pos()
-                button_range = ((x, x + 86), (y, y + 31))
-
-                if button_range[0][0] <= mouse[0] <= button_range[0][1] and button_range[1][0] <= mouse[1] <= \
-                        button_range[1][1]:
-                    print("hello")
-
-    def draw(self):
-        for entity in self.all_sprites:
-            self.screen.blit(entity.surf, entity.rect)
-
-        if self.game_over is True:
-            self.ui.restart_button(SCREEN_WIDTH / 2, SCREEN_LENGTH / 2, 20, self.color_black, self.screen)
-
-    def run_game_loop(self):
-        while self.running:
-
-            self.run_event_manager()
-            # Fill Background
-            self.screen.fill(self.bg_color)
-
-            # Update Sprites
-            pressed_keys = pygame.key.get_pressed()
-            self.player.update_position(pressed_keys, PLAYER_SPEED)
-
-            for enemy in self.enemies:
-                enemy.update()
-
-            # Draw Sprites
-            self.draw()
-
-            # Player death
-            if pygame.sprite.spritecollideany(self.player, self.enemies):
-                self.player.death_sound.play(loops=0)
-                self.player.kill()
-                self.reset_game()
-
-            # Update Display
-            pygame.display.flip()
-
-            # Adjust Framer
-            self.clock.tick(120)
-
-    def reset_game(self):
-        self.player = Player(self.screen_length, self.screen_width)
-        self.all_sprites.add(self.player)
-
-        for enemy in self.enemies:
-            enemy.kill()
-
-        # Reset the clock
-        self.clock = pygame.time.Clock()
+    def display_player(self):
+        self.screen.blit(self.player.surf, self.player.rect)
 
 
 # Constants
 SCREEN_WIDTH = 500
 SCREEN_LENGTH = 650
-BG_COLOR = (255, 255, 255)
+WHITE_COLOR = (255, 255, 255)
 ENEMY_COLOR = (255, 0, 0)
 PLAYER_SPEED = 5
 ENEMY_SPEED = 2
 COLOR_BLACK = (0, 0, 0)
 
-main = GameLoop(SCREEN_WIDTH, SCREEN_LENGTH, ENEMY_SPEED, PLAYER_SPEED, BG_COLOR, COLOR_BLACK)
+MainMenu()
