@@ -24,7 +24,9 @@ class MainMenu:
                     self.main_menu_running = False
                 if this_event.type == KEYDOWN:
                     self.main_menu_running = False
-                    GameLoop(self.screen, ENEMY_SPEED, PLAYER_SPEED, WHITE_COLOR, COLOR_BLACK)
+                    game_loop = GameLoop(self.screen, ENEMY_SPEED, PLAYER_SPEED, WHITE_COLOR, COLOR_BLACK)
+                    if not game_loop.running:
+                        self.main_menu_running = True
 
             self.screen.fill((255, 255, 255))
             self.display_text()

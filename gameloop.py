@@ -69,11 +69,8 @@ class GameLoop:
             # Draw Sprites
             self.draw()
 
-            # Player death
-            if pygame.sprite.spritecollideany(self.player, self.enemies):
-                self.player.death_sound.play(loops=0)
-                self.player.kill()
-                self.reset_game()
+            # Replay Game if player dies
+            self.check_death()
 
             # Update Display
             pygame.display.flip()
@@ -90,3 +87,8 @@ class GameLoop:
 
         # Reset the clock
         self.clock = pygame.time.Clock()
+
+    def check_death(self):
+        if pygame.sprite.spritecollideany(self.player, self.enemies):
+            self.player.death_sound.play(loops=0)
+            self.running = False
