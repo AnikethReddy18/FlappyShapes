@@ -26,6 +26,9 @@ class MainMenu:
                 if this_event.type == KEYDOWN:
                     self.main_menu_running = False
                     game_loop = GameLoop(self.screen, ENEMY_SPEED, PLAYER_SPEED, WHITE_COLOR, COLOR_BLACK)
+
+                    if game_loop.exit_game:
+                        break
                     if not game_loop.running:
                         self.main_menu_running = True
 

@@ -20,6 +20,7 @@ class GameLoop:
         # Game State
         self.running = True
         self.game_over = False
+        self.exit_game = False
 
         self.clock = pygame.time.Clock()
 
@@ -44,6 +45,7 @@ class GameLoop:
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.running = False
+                self.exit_game = True
 
             elif event.type == self.add_enemy:
                 new_enemy = Enemy(self.screen_width, self.screen_length, self.enemy_speed)
