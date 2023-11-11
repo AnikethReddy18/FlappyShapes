@@ -29,6 +29,8 @@ class GameLoop:
         # Add Enemy Event
         self.add_enemy = pygame.USEREVENT + 1
         pygame.time.set_timer(self.add_enemy, 250)
+        self.increase_ene_speed = pygame.USEREVENT + 2
+        pygame.time.set_timer(self.increase_ene_speed,15000)
 
         # Instantiate Player and UI
         self.player = Player(self.screen_width, self.screen_length)
@@ -47,10 +49,13 @@ class GameLoop:
                 self.running = False
                 self.exit_game = True
 
-            elif event.type == self.add_enemy:
+            if event.type == self.add_enemy:
                 new_enemy = Enemy(self.screen_width, self.screen_length, self.enemy_speed)
                 self.enemies.add(new_enemy)
                 self.all_sprites.add(new_enemy)
+
+            if event.type == self.increase_ene_speed:
+                self.enemy_speed += 1
 
     def draw(self):
         for entity in self.all_sprites:
