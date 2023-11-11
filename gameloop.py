@@ -1,3 +1,4 @@
+
 import pygame
 from pygame import QUIT
 from entities import Player, Enemy
@@ -36,6 +37,7 @@ class GameLoop:
         self.all_sprites = pygame.sprite.Group()
         self.all_sprites.add(self.player)
 
+        self.in_score = pygame.time.get_ticks()
         self.run_game_loop()
 
     def run_event_manager(self):
@@ -72,23 +74,22 @@ class GameLoop:
             # Replay Game if player dies
             self.check_death()
 
+            # Display Score
+            self.score_counter()
+
             # Update Display
             pygame.display.flip()
 
             # Adjust Framer
             self.clock.tick(120)
 
-    def reset_game(self):
-        self.player = Player(self.screen_length, self.screen_width)
-        self.all_sprites.add(self.player)
-
-        for enemy in self.enemies:
-            enemy.kill()
-
-        # Reset the clock
-        self.clock = pygame.time.Clock()
-
     def check_death(self):
         if pygame.sprite.spritecollideany(self.player, self.enemies):
             self.player.death_sound.play(loops=0)
             self.running = False
+
+    def score_counter(self):
+        score = (pygame.time.get_ticks() - self.in_score) // 1000
+        font = pygame.font.SysFont("arial", 20)
+        score_render = font.render(str(score), True, (0, 0, 0))
+        self.screen.blit(score_render, (50, 50))

@@ -15,6 +15,7 @@ class MainMenu:
 
         # Background Music
         bg_music = mixer.Sound("Audio/background_music.mp3")
+        bg_music.set_volume(0.3)
         bg_music.play()
 
         while self.main_menu_running:
