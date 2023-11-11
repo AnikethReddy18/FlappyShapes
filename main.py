@@ -1,7 +1,8 @@
-from pygame import display, event, QUIT, KEYDOWN, init, mixer
+from pygame import display, event, QUIT, KEYDOWN, init, mixer, time
 from pygame.font import SysFont
 from gameloop import GameLoop
 from entities import Player
+from math import sin
 
 
 class MainMenu:
@@ -17,6 +18,9 @@ class MainMenu:
         bg_music = mixer.Sound("Audio/background_music.mp3")
         bg_music.set_volume(0.3)
         bg_music.play()
+
+        # Clock
+        self.clock = time.Clock()
 
         while self.main_menu_running:
 
@@ -37,6 +41,7 @@ class MainMenu:
             self.display_player()
 
             display.flip()
+            self.clock.tick(120)
 
     def display_text(self):
         title_font = SysFont("arial", 30)
@@ -48,7 +53,8 @@ class MainMenu:
         self.screen.blit(subtext, (SCREEN_WIDTH / 2, SCREEN_LENGTH / 7))
 
     def display_player(self):
-        self.screen.blit(self.player.surf, self.player.rect)
+        y_pos = (sin(time.get_ticks()/1000)*100) + 300
+        self.screen.blit(self.player.surf, (self.player.rect.x, y_pos))
 
 
 # Constants
