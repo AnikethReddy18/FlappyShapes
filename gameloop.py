@@ -65,6 +65,7 @@ class GameLoop:
         while self.running:
 
             self.run_event_manager()
+
             # Fill Background
             self.screen.fill(self.bg_color)
 
