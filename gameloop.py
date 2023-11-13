@@ -1,6 +1,6 @@
 import pygame
 from pygame import QUIT
-from entities import Player, Enemy, Heart
+from entities import Player, Enemy, Heart, MoveHeart
 
 
 class GameLoop:
@@ -30,17 +30,21 @@ class GameLoop:
         self.no_hearts_td = self.no_hearts
         self.prev_heart_pos = [20, 20]
 
-        # Add Enemy Event
+        # Add Event
         self.add_enemy = pygame.USEREVENT + 1
         pygame.time.set_timer(self.add_enemy, 250)
         self.increase_ene_speed = pygame.USEREVENT + 2
         pygame.time.set_timer(self.increase_ene_speed, 15000)
+
+        self.give_heart = pygame.USEREVENT + 3
+        pygame.time.set_timer(self.give_heart, 7000)
 
         # Instantiate Player and UI
         self.player = Player(self.screen_width, self.screen_length)
 
         # Make Sprite Groups
         self.enemies = pygame.sprite.Group()
+        self.hearts = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group()
         self.all_sprites.add(self.player)
 
@@ -58,6 +62,11 @@ class GameLoop:
                 self.enemies.add(new_enemy)
                 self.all_sprites.add(new_enemy)
 
+            if event.type == self.give_heart:
+                heart = MoveHeart()
+                self.hearts.add(heart)
+                self.all_sprites.add(heart)
+
             if event.type == self.increase_ene_speed:
                 self.enemy_speed += 1
 
@@ -71,9 +80,14 @@ class GameLoop:
         for entity in self.all_sprites:
             self.screen.blit(entity.surf, entity.rect)
 
+        for enemy in self.enemies:
+            enemy.update()
+
+        for heart in self.hearts:
+            heart.update()
+
     def run_game_loop(self):
         while self.running:
-
             self.run_event_manager()
 
             # Fill Background
@@ -83,14 +97,11 @@ class GameLoop:
             pressed_keys = pygame.key.get_pressed()
             self.player.update_position(pressed_keys, self.player_speed)
 
-            for enemy in self.enemies:
-                enemy.update()
-
             # Draw Sprites
             self.draw()
 
-            # Check if Player dies
-            self.check_death()
+            # Check collision
+            self.check_collision()
 
             # Display Score
             self.score_counter()
@@ -101,7 +112,7 @@ class GameLoop:
             # Adjust Framer
             self.clock.tick(120)
 
-    def check_death(self):
+    def check_collision(self):
         if pygame.sprite.spritecollideany(self.player, self.enemies):
             self.player.death_sound.play(loops=0)
             self.no_hearts = self.no_hearts - 1
@@ -111,6 +122,14 @@ class GameLoop:
 
         if self.no_hearts == 0:
             self.running = False
+
+        if pygame.sprite.spritecollideany(self.player, self.hearts):
+            self.no_hearts += 1
+            self.no_hearts_td += 1
+
+            self.player.heart_capture_sound.play(loops=0)
+            for heart in self.hearts:
+                heart.kill()
 
     def score_counter(self):
         score = (pygame.time.get_ticks() - self.in_score) // 1000

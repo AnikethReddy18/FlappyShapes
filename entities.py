@@ -17,6 +17,7 @@ class Player(Sprite):
         self.screen_length = screen_length
 
         self.death_sound = Sound("Audio/player_death.mp3")
+        self.heart_capture_sound = Sound("Audio/heart_capture.mp3")
         image = load("Images/flappy_bird.png").convert_alpha()
 
         self.surf = scale(image, size)
@@ -60,13 +61,27 @@ class Enemy(Sprite):
         self.death_sound = Sound("Audio/player_death.mp3")
 
     def update(self):
-        self.rect.x -= self.speed
+        self.rect.x -= 2
+
 
 class Heart(Sprite):
     def __init__(self, posx, posy):
         super().__init__()
-
         image = load("Images/heart.png").convert_alpha()
         self.surf = scale(image, (30, 30))
         self.rect = self.surf.get_rect()
         self.rect.center = (posx, posy)
+
+
+class MoveHeart(Sprite):
+    def __init__(self, posx=500, posy=random.randint(10, 500 - 10)):
+        super().__init__()
+        image = load("Images/heart.png").convert_alpha()
+        self.surf = scale(image, (30, 30))
+        self.rect = self.surf.get_rect()
+        self.rect.center = (posx, posy)
+
+
+
+    def update(self):
+        self.rect.x -= 2
