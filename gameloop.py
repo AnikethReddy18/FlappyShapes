@@ -1,7 +1,6 @@
-
 import pygame
 from pygame import QUIT
-from entities import Player, Enemy
+from entities import Player, Enemy, Heart
 
 
 class GameLoop:
@@ -26,11 +25,16 @@ class GameLoop:
 
         pygame.init()
 
+        # Hearts
+        self.no_hearts = 3
+        self.no_hearts_td = self.no_hearts
+        self.prev_heart_pos = [20, 20]
+
         # Add Enemy Event
         self.add_enemy = pygame.USEREVENT + 1
         pygame.time.set_timer(self.add_enemy, 250)
         self.increase_ene_speed = pygame.USEREVENT + 2
-        pygame.time.set_timer(self.increase_ene_speed,15000)
+        pygame.time.set_timer(self.increase_ene_speed, 15000)
 
         # Instantiate Player and UI
         self.player = Player(self.screen_width, self.screen_length)
@@ -58,6 +62,12 @@ class GameLoop:
                 self.enemy_speed += 1
 
     def draw(self):
+        for _ in range(0, self.no_hearts_td):
+            heart = Heart(self.prev_heart_pos[0], self.prev_heart_pos[1])
+            self.all_sprites.add(heart)
+            self.prev_heart_pos[0] += 35
+            self.no_hearts_td -= 1
+
         for entity in self.all_sprites:
             self.screen.blit(entity.surf, entity.rect)
 
@@ -79,7 +89,7 @@ class GameLoop:
             # Draw Sprites
             self.draw()
 
-            # Replay Game if player dies
+            # Check if Player dies
             self.check_death()
 
             # Display Score
@@ -94,6 +104,12 @@ class GameLoop:
     def check_death(self):
         if pygame.sprite.spritecollideany(self.player, self.enemies):
             self.player.death_sound.play(loops=0)
+            self.no_hearts = self.no_hearts - 1
+            self.no_hearts_td = self.no_hearts
+
+            self.start_again()
+
+        if self.no_hearts == 0:
             self.running = False
 
     def score_counter(self):
@@ -101,3 +117,11 @@ class GameLoop:
         font = pygame.font.SysFont("arial", 20)
         score_render = font.render(str(score), True, (0, 0, 0))
         self.screen.blit(score_render, (50, 50))
+
+    def start_again(self):
+        for sprite in self.all_sprites:
+            if sprite != self.player:
+                sprite.kill()
+
+        self.player.rect.center = (self.screen_width / 2, self.screen_length / 2)
+        self.prev_heart_pos = [20, 20]

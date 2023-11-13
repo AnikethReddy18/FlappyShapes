@@ -61,3 +61,12 @@ class Enemy(Sprite):
 
     def update(self):
         self.rect.x -= self.speed
+
+class Heart(Sprite):
+    def __init__(self, posx, posy):
+        super().__init__()
+
+        image = load("Images/heart.png").convert_alpha()
+        self.surf = scale(image, (30, 30))
+        self.rect = self.surf.get_rect()
+        self.rect.center = (posx, posy)
