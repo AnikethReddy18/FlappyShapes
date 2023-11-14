@@ -6,6 +6,7 @@ from entities import Player, Enemy, Heart, MoveHeart
 class GameLoop:
     def __init__(self, screen, enemy_speed, player_speed, bg_color, color_black):
         # Configure Screen
+        self.score = 0
         self.screen = screen
         self.screen_width, self.screen_length = screen.get_size()
         # Colors
@@ -132,9 +133,9 @@ class GameLoop:
                 heart.kill()
 
     def score_counter(self):
-        score = (pygame.time.get_ticks() - self.in_score) // 1000
+        self.score = (pygame.time.get_ticks() - self.in_score) // 1000
         font = pygame.font.SysFont("arial", 20)
-        score_render = font.render(str(score), True, (0, 0, 0))
+        score_render = font.render(str(self.score), True, (0, 0, 0))
         self.screen.blit(score_render, (50, 50))
 
     def start_again(self):

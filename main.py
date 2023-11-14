@@ -22,6 +22,8 @@ class MainMenu:
         # Clock
         self.clock = time.Clock()
 
+        # Score
+        self.score = 0
         while self.main_menu_running:
 
             for this_event in event.get():
@@ -34,6 +36,8 @@ class MainMenu:
                     if game_loop.exit_game:
                         break
                     if not game_loop.running:
+                        if game_loop.score > self.score:
+                            self.score = game_loop.score
                         self.main_menu_running = True
 
             self.screen.fill((255, 255, 255))
@@ -44,13 +48,16 @@ class MainMenu:
             self.clock.tick(120)
 
     def display_text(self):
-        title_font = SysFont("arial", 30)
+        title_font = SysFont("arial", 50)
         subtext_font = SysFont("comicsansms", 20)
         title = title_font.render("Flappy Shapes", True, (0, 0, 0))
-        self.screen.blit(title, (SCREEN_WIDTH / 2 - 90, SCREEN_LENGTH / 12))
+        self.screen.blit(title, (SCREEN_WIDTH / 2 - 160, SCREEN_LENGTH / 12))
 
         subtext = subtext_font.render("Press Any Key to Play!", True, (2, 145, 150))
-        self.screen.blit(subtext, (SCREEN_WIDTH / 2, SCREEN_LENGTH / 7))
+        self.screen.blit(subtext, (SCREEN_WIDTH / 2, SCREEN_LENGTH / 6))
+
+        score = subtext_font.render(f"High Score: {self.score}", True, (235, 64, 52))
+        self.screen.blit(score, (SCREEN_WIDTH / 2 - 200, SCREEN_LENGTH / 3.5))
 
     def display_player(self):
         y_pos = (sin(time.get_ticks()/1000)*100) + 300
